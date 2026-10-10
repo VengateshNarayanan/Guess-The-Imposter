@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IMPOSTER</title>
+    <meta name="description" content="One word. One mystery. Who doesn't belong?">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="toast-container"></div>
+    
+    <header>
+        <h1>IMPOSTER</h1>
+    </header>
+
+    <main id="app-container">
+        
+        <!-- Home Screen -->
+        <section id="home-screen" class="screen active">
+            <h2 class="subtitle">One word. One mystery. Who doesn't belong?</h2>
+            
+            <div class="card">
+                <input type="text" id="player-name" placeholder="Enter your display name" maxlength="20" autocomplete="off">
+                <button id="btn-create-room" class="btn primary">Create Room</button>
+                
+                <div class="divider">OR</div>
+                
+                <div class="join-group">
+                    <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6" autocomplete="off" style="text-transform: uppercase;">
+                    <button id="btn-join-room" class="btn secondary">Join Room</button>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3>How to Play</h3>
+                <p>3-20 players required. Join a room and get your secret word. Everyone gets the same word, except one person. Find the imposter!</p>
+            </div>
+        </section>
+
+        <!-- Lobby Screen -->
+        <section id="lobby-screen" class="screen">
+            <div class="room-info">
+                <span>Room Code:</span>
+                <h2 id="display-room-code" class="mono">XXXXXX</h2>
+                <div class="room-actions">
+                    <button id="btn-copy-code" class="btn small outline">Copy</button>
+                    <button id="btn-share-code" class="btn small outline">Share</button>
+                </div>
+            </div>
+            
+            <div class="card players-card">
+                <div class="card-header">
+                    <h3>Players (<span id="player-count">0</span>/20)</h3>
+                </div>
+                <ul id="player-list" class="player-list"></ul>
+            </div>
+            
+            <div id="lobby-host-controls">
+                <p id="lobby-status-msg" class="status-message">Waiting for at least 3 players to start...</p>
+                <button id="btn-select-host" class="btn primary" disabled>Select Random Host</button>
+            </div>
+        </section>
+
+        <!-- Host Word Submission Screen -->
+        <section id="host-word-screen" class="screen">
+            <h2>You are the Host!</h2>
+            <p>Enter two different words. You will receive the common word.</p>
+            
+            <div class="card">
+                <div class="input-group">
+                    <label for="common-word">Common Word</label>
+                    <input type="text" id="common-word" placeholder="e.g. Apple" maxlength="30" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="different-word">Different Word (Imposter's Word)</label>
+                    <input type="text" id="different-word" placeholder="e.g. Mango" maxlength="30" autocomplete="off">
+                </div>
+                <button id="btn-submit-words" class="btn primary">Start Round</button>
+            </div>
+        </section>
+
+        <!-- Waiting Screen -->
+        <section id="waiting-screen" class="screen">
+            <div class="card centered">
+                <div class="loader"></div>
+                <h2 id="waiting-message">Waiting for host...</h2>
+            </div>
+        </section>
+
+        <!-- Word Reveal Screen -->
+        <section id="word-reveal-screen" class="screen">
+            <h2>Round <span id="display-round-num">1</span></h2>
+            
+            <div class="card word-card" id="hidden-word-view">
+                <h3>Your secret word is hidden.</h3>
+                <button id="btn-reveal-word" class="btn primary large">Reveal My Word</button>
+            </div>
+            
+            <div class="card word-card revealed hidden" id="revealed-word-view">
+                <h3>YOUR WORD</h3>
+                <h1 id="my-secret-word">???</h1>
+                <p class="neutral-instruction">Remember your word. Keep it secret. Listen carefully and discuss your clues.</p>
+                <button id="btn-hide-word" class="btn secondary outline">Hide Word</button>
+            </div>
+
+            <!-- Host Discussion Controls -->
+            <div id="host-discussion-controls" class="hidden mt-4">
+                <button id="btn-proceed-voting" class="btn primary">Proceed to Voting</button>
+            </div>
+        </section>
+
+        <!-- Voting Screen -->
+        <section id="voting-screen" class="screen">
+            <h2>Voting Phase</h2>
+            <p>Select the player you think doesn't belong.</p>
+            
+            <div class="card players-card">
+                <ul id="voting-player-list" class="player-list selectable"></ul>
+            </div>
+            
+            <button id="btn-submit-vote" class="btn primary" disabled>Submit Vote</button>
+            
+            <p id="voting-status" class="status-message mt-2"></p>
+
+            <div id="host-voting-controls" class="hidden mt-4">
+                <button id="btn-finish-voting" class="btn secondary">End Voting Now</button>
+            </div>
+        </section>
+
+        <!-- Results Screen -->
+        <section id="results-screen" class="screen">
+            <h2>Round Results</h2>
+            
+            <div class="card results-card highlight">
+                <h3>The Imposter was</h3>
+                <h1 id="result-imposter-name" class="accent-text">Player</h1>
+            </div>
+            
+            <div class="card results-words">
+                <div class="word-col">
+                    <span class="label">Common Word</span>
+                    <strong id="result-common-word">Word A</strong>
+                </div>
+                <div class="word-col">
+                    <span class="label">Imposter's Word</span>
+                    <strong id="result-different-word">Word B</strong>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Voting Results</h3>
+                <ul id="results-vote-list" class="vote-list"></ul>
+            </div>
+            
+            <div id="host-results-controls" class="hidden mt-4">
+                <button id="btn-play-again" class="btn primary">Play Again</button>
+            </div>
+        </section>
+        
+    </main>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
